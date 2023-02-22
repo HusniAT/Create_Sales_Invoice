@@ -12,6 +12,11 @@ import 'package:provider/provider.dart';
 import 'TestEditable/text_dialog_widget.dart';
 import 'TestEditable/users.dart';
 import 'TestEditable/utils.dart';
+import 'api/pdf_api.dart';
+import 'api/pdf_invoice_ap2i.dart';
+import 'model/Footer.dart';
+import 'model/Header.dart';
+import 'model/invoice.dart';
 
 class ShowFawater extends StatefulWidget {
 
@@ -93,8 +98,7 @@ class _ShowFawaterState extends State<ShowFawater> {
                   .of(context)
                   .size
                   .height * 0.11,),
-              Center(
-                  child: Text("فاتورة مبيعات ",
+              Center(child: Text("فاتورة مبيعات ",
                     style: TextStyle(
                       fontSize: 40,
                       foreground: Paint()
@@ -653,6 +657,7 @@ class _ShowFawaterState extends State<ShowFawater> {
                               },
                               onTapConfirm: () {
 
+                                // to calculate Total Product Price
                                 for(int x=0;x< Provider.of<TableItemsContent>(context, listen: false).users.length;x++)
                                   {
                                     total2+= Provider.of<TableItemsContent>(context, listen: false).users[x].totalPrice;
@@ -725,7 +730,70 @@ class _ShowFawaterState extends State<ShowFawater> {
                       child: Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 22),
                         child: MaterialButton(
-                          onPressed: (){
+                          onPressed: ()async{
+
+                            final invoice2 = Invoice(
+                                header:Header(
+                                  clientName:widget.customerName ?? "",
+                                  date:currentDate,
+                                  orderNum:"123445",
+                                  sellerName: "حسني ابو تمام ",
+                                ) ,
+                                footer: Footer(
+                                  discount:"  %  ${productDiscountController.text}",  //"50 %",
+                                  netCost:"$total2"  //"1000",
+                                ),
+                                items: [
+                                  TableItemData(
+                                    productName:"عصير " ,
+                                    productPrice: 0.5,
+                                    productQuantity: 2,
+                                    //  Total:1 ,
+                                  ),
+                                  TableItemData(
+                                    productName:"دخان " ,
+                                    productPrice: 2.5,
+                                    productQuantity: 3,
+                                    //  Total:0 ,
+                                  ),
+                                  TableItemData(
+                                    productName:"شبس " ,
+                                    productPrice: 0.5,
+                                    productQuantity: 5,
+                                    //  Total:0 ,
+                                  ),
+                                  TableItemData(
+                                    productName:"UK" ,
+                                    productPrice: 0.5,
+                                    productQuantity: 5,
+                                    //  Total:0 ,
+                                  ),
+
+                                 // Provider.of<TableItemsContent>(context,listen: false).users
+
+                                  for(int x=0;x < Provider.of<TableItemsContent>(context,listen: false).users.length ; x++)
+                                    TableItemData(
+                                      productName:Provider.of<TableItemsContent>(context,listen: false).users[x].orderName ,
+                                      productPrice: Provider.of<TableItemsContent>(context,listen: false).users[x].orderPrice,
+                                      productQuantity: Provider.of<TableItemsContent>(context,listen: false).users[x].orderQuantity,
+                                      //  Total:0 ,
+                                    )
+                                  // for(int i=0;i<3;i++)TableItemData(
+                                  //   productName:"${i}" ,
+                                  //   productPrice: 0.5,
+                                  //   productQuantity: 5,
+                                  //   //  Total:0 ,
+                                  // ),
+
+                                ]
+
+
+                            );
+
+                            final pdfFile2 = await PdfInvoiceApi.generate(invoice2);
+                            PdfApi.openFile(pdfFile2);
+
+
 
                           },
                           color: Colors.red,
@@ -1080,7 +1148,10 @@ class _ShowFawaterState extends State<ShowFawater> {
 
    //  final totalOneProduct=double.parse((user.orderQuantity * user.orderPrice).toStringAsFixed(2));
 
-    user.totalPrice=totalOneProduct;
+
+    user.totalPrice=num2;
+
+   // user.totalPrice=totalOneProduct;
     print("total :$total");
     total=totalOneProduct;
 
@@ -1592,9 +1663,14 @@ class _ShowFawaterState extends State<ShowFawater> {
       double totalSalary=double.parse(productQuantityController.text) * double.parse(productPriceController.text);
 
       Provider.of<TableItemsContent>(context, listen: false).addItem(
-          OrderDetails(orderName:productNameController.text ,orderQuantity:int.parse(productQuantityController.text) ,orderPrice: double.parse(productPriceController.text),
-        totalPrice:
-        roundDouble(int.parse(productQuantityController.text)*double.parse(productPriceController.text), 3)
+          OrderDetails(
+              orderName:productNameController.text ,
+              orderQuantity:int.parse(productQuantityController.text) ,
+              orderPrice: double.parse(productPriceController.text),
+              totalPrice: roundDouble(
+                  int.parse(productQuantityController.text)
+                      *
+                      double.parse(productPriceController.text), 3)
 
 
         )
