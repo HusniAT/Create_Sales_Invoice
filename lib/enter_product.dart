@@ -1,4 +1,4 @@
-import 'package:fawaterkom/show_fatwora.dart';
+import 'package:fawaterkom/add_fatwora.dart';
 import 'package:flutter/material.dart';
 import 'dart:ui' as ui;
 

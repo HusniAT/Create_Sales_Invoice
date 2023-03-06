@@ -1,5 +1,5 @@
 
-import '../show_fatwora.dart';
+import '../add_fatwora.dart';
 
 final allUsers = <OrderDetails>[
   OrderDetails(orderName: 'new Order', orderQuantity: 2, orderPrice: 37,totalPrice: 0.0),

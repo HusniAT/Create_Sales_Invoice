@@ -1,3 +1,4 @@
+import 'package:fawaterkom/select_section.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_styled_toast/flutter_styled_toast.dart';
 import 'package:getwidget/getwidget.dart';
@@ -5,12 +6,8 @@ import 'package:intl/intl.dart';
 import 'package:panara_dialogs/panara_dialogs.dart';
 import 'dart:ui' as ui;
 import 'dart:math';
-
-
 import 'package:provider/provider.dart';
-
 import 'TestEditable/text_dialog_widget.dart';
-import 'TestEditable/users.dart';
 import 'TestEditable/utils.dart';
 import 'api/pdf_api.dart';
 import 'api/pdf_invoice_ap2i.dart';
@@ -18,16 +15,16 @@ import 'model/Footer.dart';
 import 'model/Header.dart';
 import 'model/invoice.dart';
 
-class ShowFawater extends StatefulWidget {
+class AddFawater extends StatefulWidget {
 
-  const ShowFawater({Key? key,required this.customerName}) : super(key: key);
+  const AddFawater({Key? key,required this.customerName}) : super(key: key);
 
   final String? customerName;
   @override
-  State<ShowFawater> createState() => _ShowFawaterState();
+  State<AddFawater> createState() => _AddFawaterState();
 }
 
-class _ShowFawaterState extends State<ShowFawater> {
+class _AddFawaterState extends State<AddFawater> {
 
   final _formKey=GlobalKey<FormState>();
 
@@ -44,7 +41,7 @@ class _ShowFawaterState extends State<ShowFawater> {
   double total2=0.0;
 
   double price=50.0;
-  List<String> suggestons = ["USA", "UK", "Uganda", "Uruguay", "United Arab Emirates"];
+  List<String> suggestions = ["USA", "UK", "Uganda", "Uruguay", "United Arab Emirates"];
 
 
   bool showTotal=false;
@@ -54,12 +51,6 @@ class _ShowFawaterState extends State<ShowFawater> {
   String currentDate = DateFormat('yyyy-MM-dd').format(DateTime.now());
 
   final Map<String,String>_productData={
-
-
-
-
-
-
 
   };
 
@@ -75,18 +66,13 @@ class _ShowFawaterState extends State<ShowFawater> {
 
   @override
   Widget build(BuildContext context) {
-    final List<Map<String, String>> listOfColumns = [
-      // {"Name": "AAAAAA", "Number": "1", "State": "Yes"},
-      // {"Name": "BBBBBB", "Number": "2", "State": "no"},
-      // {"Name": "CCCCCC", "Number": "3", "State": "Yes"}
-    ];
-    listOfColumns.add({"Name": "AAAAAA", "Number": "1", "State": "Yes"});
+
     return Directionality(
       textDirection: ui.TextDirection.rtl,
 
       child: Scaffold(
         // appBar: AppBar(
-        //   backgroundColor: Colors.transparent,
+        //   backgroundColor: Colors.red.shade300,
         // ),
         body: SingleChildScrollView(
           child: Column(
@@ -104,7 +90,7 @@ class _ShowFawaterState extends State<ShowFawater> {
                       foreground: Paint()
                         ..style = PaintingStyle.stroke
                         ..strokeWidth = 3
-                        ..color = Colors.blue.withOpacity(0.8)!,
+                        ..color = Colors.blue.withOpacity(0.8),
                     ),
                   )),
 
@@ -131,6 +117,7 @@ class _ShowFawaterState extends State<ShowFawater> {
                           fontWeight: FontWeight.w700
                       ),
                     ),
+
                     const SizedBox(width: 2,),
                     Expanded(
                       child: Container(
@@ -382,10 +369,10 @@ class _ShowFawaterState extends State<ShowFawater> {
                     headingRowColor:
                     MaterialStateColor.resolveWith((states) => Colors.grey.withOpacity(0.5)),
                     dataRowHeight: 70,
-                    columns: [
+                    columns: const [
                       DataColumn(
                         label: Padding(
-                          padding: const EdgeInsets.all(8.0),
+                          padding: EdgeInsets.all(8.0),
                           child: Text('  المادة'),
                         ),
                       ),
@@ -473,12 +460,12 @@ class _ShowFawaterState extends State<ShowFawater> {
                           child: Container(
                         color: Colors.black.withOpacity(0.6),
                             height: 35,
-                            child: Padding(
-                              padding: const EdgeInsets.all(5.0),
+                            child: const Padding(
+                              padding: EdgeInsets.all(5.0),
                               child: Text("المجموع الكلي",style: TextStyle(color: Colors.white,fontSize: 15,fontWeight: FontWeight.bold),),
                             ),
                       )),
-                      SizedBox(width: 10,),
+                      const SizedBox(width: 10,),
                       Expanded(
                           flex:2,
                           child:
@@ -492,7 +479,7 @@ class _ShowFawaterState extends State<ShowFawater> {
                               child: Padding(
                                 padding: const EdgeInsets.symmetric(horizontal: 8.0,vertical: 5),
                                 child:
-                                Text("$total2",style: TextStyle(color: Colors.white,fontSize: 15,fontWeight: FontWeight.bold),),
+                                Text("$total2",style: const TextStyle(color: Colors.white,fontSize: 15,fontWeight: FontWeight.bold),),
                               ),
                             ),
                           ),
@@ -707,11 +694,59 @@ class _ShowFawaterState extends State<ShowFawater> {
 
                             //  Navigator.pop(context);
                           },
-                          color: Colors.red,
+                          color: Colors.greenAccent,
                           shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(4)),
                           child: const Text(
                             "تأكيد",
+                            style: TextStyle(fontSize: 15,color: Colors.white,fontWeight: FontWeight.w600
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 5,),
+
+              Visibility(
+                visible: allowEdit?true:false,
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 22),
+                        child: MaterialButton(
+                          onPressed: (){
+                            PanaraConfirmDialog.show(
+                              context,
+                              title: "انتبه !!",
+                              message: "سوف تفقد جميع بيانات التي قمت بادخالها  ",
+                              confirmButtonText: "تأكيد",
+                              textColor: Colors.black,
+
+                              cancelButtonText: "الغاء",
+                              onTapCancel: () {
+                                Navigator.pop(context);
+                              },
+                              onTapConfirm: () {
+                                Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context)=>   SelectSection  ()), (route) => false) ;
+
+
+                              },
+                              panaraDialogType: PanaraDialogType.warning,
+                              barrierDismissible: false, // optional parameter (default is true)
+                            );
+
+
+
+                          },
+                          color: Colors.red,
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(4)),
+                          child: const Text(
+                            "تراجع ",
                             style: TextStyle(fontSize: 15,color: Colors.white,fontWeight: FontWeight.w600
                             ),
                           ),
@@ -744,25 +779,25 @@ class _ShowFawaterState extends State<ShowFawater> {
                                   netCost:"$total2"  //"1000",
                                 ),
                                 items: [
-                                  TableItemData(
+                                  const TableItemData(
                                     productName:"عصير " ,
                                     productPrice: 0.5,
                                     productQuantity: 2,
                                     //  Total:1 ,
                                   ),
-                                  TableItemData(
+                                  const TableItemData(
                                     productName:"دخان " ,
                                     productPrice: 2.5,
                                     productQuantity: 3,
                                     //  Total:0 ,
                                   ),
-                                  TableItemData(
+                                  const TableItemData(
                                     productName:"شبس " ,
                                     productPrice: 0.5,
                                     productQuantity: 5,
                                     //  Total:0 ,
                                   ),
-                                  TableItemData(
+                                  const TableItemData(
                                     productName:"UK" ,
                                     productPrice: 0.5,
                                     productQuantity: 5,
@@ -810,322 +845,12 @@ class _ShowFawaterState extends State<ShowFawater> {
                   ],
                 ),
               ),
-
-              // Padding(
-              //   padding: const EdgeInsets.symmetric(horizontal: 12.0,vertical: 5),
-              //   child: Row(
-              //     children: [
-              //       Text(
-              //         "صافي التكلفة "+' :       ',
-              //         style: TextStyle(
-              //             color: Colors.black,
-              //             fontSize: 15,
-              //             fontWeight: FontWeight.w600
-              //         ),
-              //       ),
-              //       SizedBox(width: 2,),
-              //       Container(
-              //         height: 50,
-              //         width: 90,
-              //         padding: EdgeInsets.all(3.0),
-              //         child: TextField(
-              //           //  autofocus:addName? true:false,
-              //           //  readOnly: addName? false:true,
-              //           decoration: InputDecoration(
-              //             enabledBorder: OutlineInputBorder(
-              //               borderSide: BorderSide(
-              //                   width: 1.5, color: Colors.grey), //<-- SEE HERE
-              //             ),
-              //             focusedBorder:OutlineInputBorder(
-              //               borderSide: BorderSide(
-              //                   width: 1.5, color: Colors.grey), //<-- SEE HERE
-              //             ),
-              //           ),
-              //
-              //      //     controller:productQuantityController ,
-              //
-              //           onSubmitted: (String? newval){
-              //         //    productQuantityController.text=newval!;
-              //          //   print(productQuantityController.text);
-              //
-              //
-              //             setState(() {
-              //               total=double.parse(productQuantityController.text)*price;
-              //
-              //             });
-              //             print(total);
-              //           },
-              //           onChanged: (String? newval){
-              //             productQuantityController.text=newval!;
-              //             print(productQuantityController.text);
-              //
-              //
-              //             setState(() {
-              //               total=double.parse(productQuantityController.text)*price;
-              //             });
-              //             print(total);
-              //           },
-              //           // onSubmitted: (String newWord){
-              //           //   print("all");
-              //           //   print("$newWord");
-              //           //
-              //           // },
-              //         ),
-              //       ),
-              //       // Spacer(),
-              //       // ElevatedButton(onPressed: (){
-              //       //   setState(() {
-              //       //    // addName=!addName;
-              //       //   });
-              //       //  // print(addName);
-              //       // }, child: Text("Add"))
-              //
-              //       // RichText(
-              //       //     text: TextSpan(
-              //       //         text: "اسم العميل"+' : ',
-              //       //         style: TextStyle(
-              //       //             color: Colors.black,
-              //       //             fontSize: 15,
-              //       //             fontWeight: FontWeight.w600
-              //       //         ),
-              //       //         children: <TextSpan>[
-              //       //           TextSpan(
-              //       //             text: "",
-              //       //             style: TextStyle(color: Colors.black,fontWeight: FontWeight.w500),
-              //       //           )
-              //       //         ]
-              //       //     )
-              //       //
-              //       // ),
-              //
-              //     ],
-              //   ),
-              // ),
-
-
-              // Row(
-              //   children: [
-              //     Expanded(
-              //       child: Padding(
-              //         padding: EdgeInsets.only(left: 12, right: 6),
-              //         child: MaterialButton(
-              //           onPressed: (){
-              //
-              //             for(int i=0;i<Provider.of<TableItem2>(context,listen: false).users.length;i++)
-              //               {
-              //                 print(Provider.of<TableItem2>(context,listen: false).users[i].orderName);
-              //                 print(Provider.of<TableItem2>(context,listen: false).users[i].orderQuantity);
-              //                 print(Provider.of<TableItem2>(context,listen: false).users[i].orderPrice);
-              //                 print(Provider.of<TableItem2>(context,listen: false).users[i].totalPrice);
-              //
-              //                 print("---------------");
-              //               }
-              //
-              //
-              //             //  print(users[0].orderName);
-              //            // print(users[0].orderQuantity);
-              //            // print(users[0].orderPrice);
-              //
-              //             // print("CANCEL");
-              //             // setState(() {
-              //             //   productNameController.text='';
-              //             //   productQuantityController.text='';
-              //             // });
-              //
-              //
-              //
-              //           //  Navigator.pop(context);
-              //           },
-              //           color: Colors.red,
-              //           child: Text(
-              //             "طباعة",
-              //             style: TextStyle(fontSize: 12,color: Colors.white,
-              //             ),
-              //           ),
-              //           shape: RoundedRectangleBorder(
-              //               borderRadius: BorderRadius.circular(4)),
-              //         ),
-              //       ),
-              //     ),
-              //     // Expanded(
-              //     //   child: Padding(
-              //     //     padding: EdgeInsets.only(left: 6, right: 12),
-              //     //     child: MaterialButton(
-              //     //       onPressed: (){
-              //     //         _submit();
-              //     //
-              //     //         // Provider.of<TableItem>(context,listen: false).addItem({"المادة": productNameController.text, "الكمية": productQuantityController.text, "السعر": productPriceController.text,"المجموع":"$total"});
-              //     //         // setState(() {
-              //     //         //   productNameController.text='';
-              //     //         //   productQuantityController.text='';
-              //     //         //   productPriceController.text='';
-              //     //         // });
-              //     //         // Navigator.pop(context);
-              //     //
-              //     //       },
-              //     //       color: Colors.green,
-              //     //       child: Text(
-              //     //         "اضافة",
-              //     //         style: TextStyle(fontSize: 12, color: Colors.white,
-              //     //         ),
-              //     //       ),
-              //     //       shape: RoundedRectangleBorder(
-              //     //           borderRadius: BorderRadius.circular(4)),
-              //     //     ),
-              //     //   ),
-              //     // )
-              //   ],
-              // ),
-              // Row(
-              //   children: [
-              //     Expanded(
-              //       child: Padding(
-              //         padding: EdgeInsets.only(left: 12, right: 6),
-              //         child: MaterialButton(
-              //           onPressed: (){
-              //
-              //             for(int i=0;i<Provider.of<TableItem2>(context,listen: false).users.length;i++)
-              //             {
-              //               total2+=Provider.of<TableItem2>(context,listen: false).users[i].totalPrice;
-              //               print(Provider.of<TableItem2>(context,listen: false).users[i].orderName);
-              //               print(Provider.of<TableItem2>(context,listen: false).users[i].orderQuantity);
-              //               print(Provider.of<TableItem2>(context,listen: false).users[i].orderPrice);
-              //               print(Provider.of<TableItem2>(context,listen: false).users[i].totalPrice);
-              //               print("-------total2  : $total2--------");
-              //
-              //               print("---------------");
-              //             }
-              //
-              //             setState(() {
-              //               showTotal=!showTotal;
-              //             });
-              //
-              //             //  print(users[0].orderName);
-              //             // print(users[0].orderQuantity);
-              //             // print(users[0].orderPrice);
-              //
-              //             // print("CANCEL");
-              //             // setState(() {
-              //             //   productNameController.text='';
-              //             //   productQuantityController.text='';
-              //             // });
-              //
-              //
-              //
-              //             //  Navigator.pop(context);
-              //           },
-              //           color: Colors.red,
-              //           child: Text(
-              //             "تأكيد",
-              //             style: TextStyle(fontSize: 12,color: Colors.white,
-              //             ),
-              //           ),
-              //           shape: RoundedRectangleBorder(
-              //               borderRadius: BorderRadius.circular(4)),
-              //         ),
-              //       ),
-              //     ),
-              //     // Expanded(
-              //     //   child: Padding(
-              //     //     padding: EdgeInsets.only(left: 6, right: 12),
-              //     //     child: MaterialButton(
-              //     //       onPressed: (){
-              //     //         _submit();
-              //     //
-              //     //         // Provider.of<TableItem>(context,listen: false).addItem({"المادة": productNameController.text, "الكمية": productQuantityController.text, "السعر": productPriceController.text,"المجموع":"$total"});
-              //     //         // setState(() {
-              //     //         //   productNameController.text='';
-              //     //         //   productQuantityController.text='';
-              //     //         //   productPriceController.text='';
-              //     //         // });
-              //     //         // Navigator.pop(context);
-              //     //
-              //     //       },
-              //     //       color: Colors.green,
-              //     //       child: Text(
-              //     //         "اضافة",
-              //     //         style: TextStyle(fontSize: 12, color: Colors.white,
-              //     //         ),
-              //     //       ),
-              //     //       shape: RoundedRectangleBorder(
-              //     //           borderRadius: BorderRadius.circular(4)),
-              //     //     ),
-              //     //   ),
-              //     // )
-              //   ],
-              // ),
-
-
             ],
           ),
         ),
       ),
     );
 
-
-    //   List<DataColumn> getColumns(List<String> columns) {
-//     return columns.map((String column) {
-//       final isAge = column == columns[2];
-//
-//       return DataColumn(
-//         label: Text(column),
-//         numeric: isAge,
-//       );
-//     }).toList();
-//   }
-//
-//   List<DataRow> getRows(List<User> users) => users.map((User user) {
-//         final cells = [user.firstName, user.lastName, user.age];
-//
-//         return DataRow(
-//           cells: Utils.modelBuilder(cells, (index, cell) {
-//             final showEditIcon = index == 0 || index == 1;
-//
-//             return DataCell(
-//               Text('$cell'),
-//               showEditIcon: showEditIcon,
-//               onTap: () {
-//                 switch (index) {
-//                   case 0:
-//                     editFirstName(user);
-//                     break;
-//                   case 1:
-//                     editLastName(user);
-//                     break;
-//                 }
-//               },
-//             );
-//           }),
-//         );
-//       }).toList();
-//
-//   Future editFirstName(User editUser) async {
-//     final firstName = await showTextDialog(
-//       context,
-//       title: 'Change First Name',
-//       value: editUser.firstName,
-//     );
-//
-//     setState(() => users = users.map((user) {
-//           final isEditedUser = user == editUser;
-//
-//           return isEditedUser ? user.copy(firstName: firstName) : user;
-//         }).toList());
-//   }
-//
-//   Future editLastName(User editUser) async {
-//     final lastName = await showTextDialog(
-//       context,
-//       title: 'Change Last Name',
-//       value: editUser.lastName,
-//     );
-//
-//     setState(() => users = users.map((user) {
-//           final isEditedUser = user == editUser;
-//
-//           return isEditedUser ? user.copy(lastName: lastName) : user;
-//         }).toList());
-//   }
   }
 
     List<DataColumn> getColumns(List<String> columns) {
@@ -1145,34 +870,23 @@ class _ShowFawaterState extends State<ShowFawater> {
   List<DataRow> getRows(List<OrderDetails> users) => users.map((OrderDetails user) {
     final totalOneProduct=user.orderQuantity * user.orderPrice;
     double num2 = roundDouble(totalOneProduct, 2);
-
    //  final totalOneProduct=double.parse((user.orderQuantity * user.orderPrice).toStringAsFixed(2));
-
-
     user.totalPrice=num2;
-
    // user.totalPrice=totalOneProduct;
     print("total :$total");
     total=totalOneProduct;
 
     print("total :$total");
-
         final cells = [user.orderName, user.orderQuantity, user.orderPrice,num2];
-
         return DataRow(
           cells: Utils.modelBuilder(cells, (index, cell) {
-            final showEditIcon;
+            final bool showEditIcon;
             if(allowEdit){
               showEditIcon = index == 0 || index == 1 || index == 2;
-
             }
             else {
               showEditIcon=false;
-
             }
-
-
-
             return DataCell(
               Text(' $cell  '),
               showEditIcon: showEditIcon,
@@ -1201,10 +915,8 @@ class _ShowFawaterState extends State<ShowFawater> {
       title: 'Change First Name',
       value: editOrder.orderName,
     );
-
     setState(() => Provider.of<TableItemsContent>(context,listen: false).users = Provider.of<TableItemsContent>(context,listen: false).users.map((user) {
           final isEditedUser = user == editOrder;
-
           return isEditedUser ? user.copy(orderName: newOrderName) : user;
         }).toList());
   }
@@ -1215,10 +927,8 @@ class _ShowFawaterState extends State<ShowFawater> {
       title: 'Change Order Quantity',
       value: editOrder.orderQuantity,
     );
-
     setState(() => Provider.of<TableItemsContent>(context,listen: false).users = Provider.of<TableItemsContent>(context,listen: false).users.map((user) {
           final isEditedUser = user == editOrder;
-
           return isEditedUser ? user.copy(orderQuantity: newOrderQuantity) : user;
         }).toList());
   }
@@ -1232,7 +942,6 @@ class _ShowFawaterState extends State<ShowFawater> {
 
     setState(() => Provider.of<TableItemsContent>(context,listen: false).users = Provider.of<TableItemsContent>(context,listen: false).users.map((user) {
       final isEditedUser = user == editOrder;
-
       return isEditedUser ? user.copy(orderPrice: newPrice) : user;
     }).toList());
   }
@@ -1240,92 +949,19 @@ class _ShowFawaterState extends State<ShowFawater> {
   void openAlert() {
   var dialog = Dialog(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16.0)),
-      //this right here
       child: Directionality(
         textDirection:ui.TextDirection.rtl,
-
         child: SizedBox(
-          height: MediaQuery.of(context).size.height*0.4,
+          height: MediaQuery.of(context).size.height*0.5,
           width: double.infinity,
           child: Form(
             key: _formKey,
             child: ListView(
               shrinkWrap: true,
               children: <Widget>[
+
                 SizedBox(height: MediaQuery.of(context).size.height*0.05,),
-                // Visibility(
-                //   visible: customerNamesController.text==''?true:false,
-                //   child: Padding(
-                //     padding: const EdgeInsets.symmetric(horizontal: 12.0,vertical: 5),
-                //     child: Row(
-                //       children: [
-                //         Text(
-                //           "اسم العميل"+' : ',
-                //           style: TextStyle(
-                //               color: Colors.black,
-                //               fontSize: 15,
-                //               fontWeight: FontWeight.w600
-                //           ),
-                //         ),
-                //         SizedBox(width: 2,),
-                //         Expanded(
-                //           child: Container(
-                //             padding: EdgeInsets.all(3.0),
-                //             child: SizedBox(
-                //               height: 40,
-                //               child: TextField(
-                //                 controller:customerNamesController ,
-                //                 onSubmitted: (String? newval){
-                //                   customerNamesController.text=newval!;
-                //                   print(customerNamesController.text);
-                //                 },
-                //
-                //                 //  autofocus:addName? true:false,
-                //                 //  readOnly: addName? false:true,
-                //                 decoration: InputDecoration(
-                //                   enabledBorder: OutlineInputBorder(
-                //                     borderSide: BorderSide(
-                //                         width: 1.5, color: Colors.grey), //<-- SEE HERE
-                //                   ),
-                //                   focusedBorder:OutlineInputBorder(
-                //                     borderSide: BorderSide(
-                //                         width: 1.5, color: Colors.grey), //<-- SEE HERE
-                //                   ),
-                //                 ),
-                //               ),
-                //             ),
-                //           ),
-                //         ),
-                //         // Spacer(),
-                //         // ElevatedButton(onPressed: (){
-                //         //   setState(() {
-                //         //    // addName=!addName;
-                //         //   });
-                //         //  // print(addName);
-                //         // }, child: Text("Add"))
-                //
-                //         // RichText(
-                //         //     text: TextSpan(
-                //         //         text: "اسم العميل"+' : ',
-                //         //         style: TextStyle(
-                //         //             color: Colors.black,
-                //         //             fontSize: 15,
-                //         //             fontWeight: FontWeight.w600
-                //         //         ),
-                //         //         children: <TextSpan>[
-                //         //           TextSpan(
-                //         //             text: "",
-                //         //             style: TextStyle(color: Colors.black,fontWeight: FontWeight.w500),
-                //         //           )
-                //         //         ]
-                //         //     )
-                //         //
-                //         // ),
-                //
-                //       ],
-                //     ),
-                //   ),
-                // ),
+
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 12.0,vertical: 5),
                   child: Row(
@@ -1357,7 +993,7 @@ class _ShowFawaterState extends State<ShowFawater> {
                                     return const Iterable<String>.empty();
                                   }else{
                                     List<String> matches = <String>[];
-                                    matches.addAll(suggestons);
+                                    matches.addAll(suggestions);
                                     matches.retainWhere((s){
                                       return s.toLowerCase().contains(textEditingValue.text.toLowerCase());
                                     });
@@ -1415,7 +1051,7 @@ class _ShowFawaterState extends State<ShowFawater> {
                           autofocus: false,
                           onSaved: (String? newVal){
                             _productData['الكمية']=newVal!;
-                            productQuantityController.text=newVal!;
+                            productQuantityController.text=newVal;
                             print(productQuantityController.text);
                           },
                           validator: (String? value){
@@ -1433,6 +1069,7 @@ class _ShowFawaterState extends State<ShowFawater> {
                     ],
                   ),
                 ),
+
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 12.0,vertical: 5),
                   child: Row(
@@ -1468,7 +1105,7 @@ class _ShowFawaterState extends State<ShowFawater> {
                           autofocus: false,
                           onSaved: (String? newVal){
                             _productData['السعر']=newVal!;
-                            productPriceController.text=newVal!;
+                            productPriceController.text=newVal;
                             print(productPriceController.text);
                           },
                           validator: (String? value){
@@ -1496,47 +1133,6 @@ class _ShowFawaterState extends State<ShowFawater> {
                   ),
                 ),
 
-                // ClipRRect(
-                //   child: Image.asset(
-                //     "assets/images/water1.jpg",
-                //     width: double.infinity,
-                //     height: 180,
-                //     fit: BoxFit.cover,
-                //   ),
-                //   borderRadius: BorderRadius.only(
-                //       topLeft: Radius.circular(16), topRight: Radius.circular(16)),
-                // ),
-                // Container(
-                //   margin: EdgeInsets.only(top: 16),
-                //  // decoration: boxDecorationStylealert,
-                //   width: 200,
-                //   padding: EdgeInsets.symmetric(horizontal: 8),
-                //   height: 50,
-                //   child: Row(
-                //     mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                //     children: [
-                //       GestureDetector(
-                //           onTap: () {
-                //           //  showToastMessage("-");
-                //           },
-                //           child:Image.asset("assets/images/subtraction.png",width: 30,height: 30,)),
-                //       Text(
-                //         "1",
-                //         style: TextStyle(
-                //             fontSize: 26,
-                //             fontWeight: FontWeight.bold,
-                //           color: Colors.blue,
-                //         ),
-                //       ),
-                //       GestureDetector(
-                //           onTap: () {
-                //            // showToastMessage("+");
-                //           },
-                //           child:Image.asset("assets/images/add.png",width: 30,height: 30,)),
-                //     ],
-                //   ),
-                // ),
-                // Expanded(child: Container()),
                 Row(
                   children: [
                     Expanded(
@@ -1544,7 +1140,6 @@ class _ShowFawaterState extends State<ShowFawater> {
                         padding: const EdgeInsets.only(left: 12, right: 6),
                         child: MaterialButton(
                           onPressed: (){
-                          //  print("CANCEL");
                             setState(() {
                               productNameController.text='';
                               productQuantityController.text='';
@@ -1591,47 +1186,11 @@ class _ShowFawaterState extends State<ShowFawater> {
     );
     showDialog(
         barrierDismissible: false,
-
         context: context, builder: (BuildContext context) => dialog);
   }
 
-  // void _submit() {
-  //
-  //   if(!_formKey.currentState!.validate())
-  //   {
-  //     print(" Not validate Form");
-  //     return ;
-  //   }
-  //   else if(productNameController.text==''){
-  //     print("Error , No Name Product Available");
-  //
-  //   }
-  //   {
-  //     FocusScope.of(context).unfocus();
-  //     _formKey.currentState!.save();
-  //     print("------");
-  //     print(_productData['الكمية']);
-  //     print(productQuantityController.text);
-  //     print('--------------------------------');
-  //     double totalSalary=double.parse(productQuantityController.text) * double.parse(productPriceController.text);
-  //
-  //     Provider.of<TableItem>(context, listen: false).addItem({
-  //       "المادة": productNameController.text,
-  //       "الكمية": productQuantityController.text,
-  //       "السعر": productPriceController.text,
-  //       "المجموع": "$totalSalary"
-  //     });
-  //     setState(() {
-  //       productNameController.text = '';
-  //       productQuantityController.text = '';
-  //       productPriceController.text = '';
-  //     });
-  //     Navigator.pop(context);
-  //   }
-  // }
 
   void _submit2() {
-
     if(!_formKey.currentState!.validate())
     {
       print(" Not validate Form");
@@ -1650,8 +1209,6 @@ class _ShowFawaterState extends State<ShowFawater> {
         curve: Curves.elasticOut,
         reverseCurve: Curves.linear,
       );
-     // print("Error , No Name Product Available");
-
     }
    else {
       FocusScope.of(context).unfocus();
@@ -1661,7 +1218,6 @@ class _ShowFawaterState extends State<ShowFawater> {
       print(productQuantityController.text);
       print('--------------------------------');
       double totalSalary=double.parse(productQuantityController.text) * double.parse(productPriceController.text);
-
       Provider.of<TableItemsContent>(context, listen: false).addItem(
           OrderDetails(
               orderName:productNameController.text ,
@@ -1671,65 +1227,19 @@ class _ShowFawaterState extends State<ShowFawater> {
                   int.parse(productQuantityController.text)
                       *
                       double.parse(productPriceController.text), 3)
-
-
         )
       );
-    //  print("total : $total");
       setState(() {
-      //  total+=int.parse(productQuantityController.text)*double.parse(productPriceController.text);
         productNameController.text = '';
         productQuantityController.text = '';
         productPriceController.text = '';
-       // total+=
       });
-    //  print("total : $total");
-
       Navigator.pop(context);
     }
   }
 
-// Future getTimes() async {
-  //   SharedPreferences preferences = await SharedPreferences.getInstance();
-  //   final url = Uri.http(URL, "api/hours-range");
-  //   try {
-  //     final response = await http.post(
-  //       url,
-  //       body: {
-  //         "lang": preferences.getString("lang"),
-  //         "date": Provider.of<TimeAndDateAndAdressModel>(context, listen: false)
-  //             .date
-  //       },
-  //     ).timeout(Duration(seconds: 10),
-  //         onTimeout: () => throw 'no internet please connect to internet');
-  //     final responseData = json.decode(response.body);
-  //     if (response.statusCode == 200) {
-  //       if (responseData["key"] == "success") {
-  //         timesModel = TimesModel.fromJson(responseData);
-  //       } else {
-  //         Fluttertoast.showToast(msg: responseData["msg"]);
-  //       }
-  //     }
-  //   } catch (e, t) {
-  //     print("error $e" + " ==>> track $t");
-  //   }
-  // }
 
 }
-// class ProductItem with ChangeNotifier {
-//   String date;
-//   String time;
-//
-//   set Date(String value) {
-//     date = value;
-//     time = "";
-//     notifyListeners();
-//   }
-//
-//   set Time(String value) {
-//     time = value;
-//   }
-// }
 class TableItem with ChangeNotifier {
   final List<Map<String, String>> listOfColumns = [
    // {"المادة": "A", "الكمية": "1", "السعر": "12","المجموع":"200"},
